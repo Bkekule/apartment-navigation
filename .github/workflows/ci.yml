@@ -28,6 +28,7 @@ jobs:
 
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
+        shell: bash
         run: |
           sudo curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
             -o /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
@@ -47,6 +48,12 @@ jobs:
           sudo curl -sSL https://raw.githubusercontent.com/zeromq/cppzmq/v4.10.0/zmq.hpp \
             -o /usr/local/include/zmq.hpp
 
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew tap osrf/simulation
+          brew install gz-harmonic cmake doxygen cppcheck pre-commit
+
       - name: Set environment (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -54,12 +61,7 @@ jobs:
             echo "OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3"
             echo "CFLAGS=-I/opt/homebrew/include"
             echo "LDFLAGS=-L/opt/homebrew/lib"
-            echo "CMAKE_ARGS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
           } >> "$GITHUB_ENV"
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: brew install gz-harmonic cmake doxygen cppcheck pre-commit
 
       - name: Run pre-commit hooks (Linux)
         if: runner.os == 'Linux'
