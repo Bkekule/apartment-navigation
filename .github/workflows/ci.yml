@@ -61,6 +61,7 @@ jobs:
             echo "OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3"
             echo "CFLAGS=-I/opt/homebrew/include"
             echo "LDFLAGS=-L/opt/homebrew/lib"
+            export CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt@5"
           } >> "$GITHUB_ENV"
 
       - name: Run pre-commit hooks (Linux)

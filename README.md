@@ -1,67 +1,79 @@
-# Apartment Navigation
+# Apartment Navigation (MacOS)
 
 A Gazebo Harmonic simulation of a robot navigating an apartment, built as a Gazebo Sim plugin.
 
 ## Dependencies
 
-Install via Homebrew:
-
-```bash
-brew install gz-harmonic   # pulls in gz-sim8, gz-plugin2, gz-cmake3, and the rest of the stack
-brew install cmake
-brew install doxygen
-brew install cppcheck
-brew install pre-commit
+```zsh
+brew tap osrf/simulation
+brew install gz-harmonic cmake doxygen cppcheck pre-commit
 ```
-
-> `gz-harmonic` is the meta-package — it installs the full Gazebo Harmonic suite as a unit.
 
 ## Build
 
-```bash
+```zsh
 cmake -B build
 cmake --build build
 ```
 
-**Available build options** (pass with `-D<OPTION>=ON`):
+**Optional build flags** (pass with `-D<FLAG>=ON`):
 
-| Option | Default | Description |
+| Flag | Default | Description |
 |---|---|---|
-| `ENABLE_UBSAN` | `ON` | UndefinedBehaviorSanitizer — catches UB at runtime |
-| `ENABLE_ASAN` | `OFF` | AddressSanitizer — catches memory errors (2× memory overhead) |
-| `ENABLE_TSAN` | `OFF` | ThreadSanitizer — catches data races (5–15× overhead) |
-| `ENABLE_CLANG_TIDY` | `OFF` | Run clang-tidy static analysis on every file |
-| `ENABLE_CPPCHECK` | `OFF` | Run cppcheck static analysis on every file |
+| `ENABLE_UBSAN` | `ON` | UndefinedBehaviorSanitizer |
+| `ENABLE_ASAN` | `OFF` | AddressSanitizer — mutually exclusive with TSan |
+| `ENABLE_TSAN` | `OFF` | ThreadSanitizer — mutually exclusive with ASan |
+| `ENABLE_CLANG_TIDY` | `OFF` | clang-tidy static analysis |
+| `ENABLE_CPPCHECK` | `OFF` | cppcheck static analysis |
 
-> ASan and TSan are mutually exclusive — enabling both will abort the configure step.
+## Run
 
-Example — full debug build with address sanitizer and static analysis:
+On macOS, the server and GUI must be launched in separate terminals.
 
-```bash
-cmake -B build -DENABLE_ASAN=ON -DENABLE_CLANG_TIDY=ON
-cmake --build build
+**Terminal 1 — server:**
+
+```zsh
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$PWD/build
+export GZ_SIM_RESOURCE_PATH=$PWD/model
+
+gz sim -s world/myworld.sdf
 ```
+
+**Terminal 2 — GUI:**
+
+```zsh
+export OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3
+export CFLAGS=-I/opt/homebrew/include
+export LDFLAGS=-L/opt/homebrew/lib
+export CMAKE_PREFIX_PATH=/opt/homebrew/opt/qt@5
+
+gz sim -g
+```
+
+## Development Setup
+
+Install the pre-commit hooks so linting and formatting run automatically before every commit:
+
+```zsh
+pre-commit install
+```
+
+If you use VS Code, the following tasks are available out of the box (`⌘⇧B` to run):
+
+| Task | Description |
+|---|---|
+| **Build (MacOS)** | Default build with UBSan off |
+| **Build (ASan)** | Build with AddressSanitizer |
+| **Build (TSan)** | Build with ThreadSanitizer |
+| **Analyse** | Build with clang-tidy and cppcheck enabled |
+| **Format Check** | Dry-run clang-format across all sources |
+| **Docs** | Generate Doxygen docs and open in browser |
 
 ## Documentation
 
-Generate API docs with Doxygen:
-
-```bash
+```zsh
 doxygen
 open docs/doxygen/html/index.html
 ```
 
-Documentation coverage is enforced — Doxygen exits non-zero if any public symbol is undocumented.
-
-## Run
-
-```bash
-gz sim world/myworld.sdf
-```
-
-Make sure the build output is on the plugin path:
-
-```bash
-export GZ_SIM_SYSTEM_PLUGIN_PATH=$PWD/build
-gz sim world/myworld.sdf
-```
+Or browse the hosted docs at [bkekule.github.io/apartment-navigation](https://bkekule.github.io/apartment-navigation/).
