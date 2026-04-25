@@ -1,0 +1,74 @@
+{
+    "name": "Apartment Navigation",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+
+    "postCreateCommand": "pre-commit install",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "llvm-vs-code-extensions.vscode-clangd",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.makefile-tools",
+                "cschlosser.doxdocgen",
+                "github.vscode-github-actions",
+                "anthropic.claude-code"
+            ],
+            "tasks": {
+                "version": "2.0.0",
+                "tasks": [
+                    {
+                        "label": "Build (UBSan)",
+                        "type": "shell",
+                        "command": "ci/build.sh",
+                        "group": {
+                            "kind": "build",
+                            "isDefault": true
+                        },
+                        "problemMatcher": "$gcc"
+                    },
+                    {
+                        "label": "Build (ASan)",
+                        "type": "shell",
+                        "command": "ENABLE_ASAN=ON ci/build.sh",
+                        "group": "build",
+                        "problemMatcher": "$gcc"
+                    },
+                    {
+                        "label": "Build (TSan)",
+                        "type": "shell",
+                        "command": "ENABLE_TSAN=ON ci/build.sh",
+                        "group": "build",
+                        "problemMatcher": "$gcc"
+                    },
+                    {
+                        "label": "Docs (Doxygen)",
+                        "type": "shell",
+                        "command": "ci/docs.sh",
+                        "group": "build",
+                        "problemMatcher": []
+                    }
+                ]
+            },
+            "settings": {
+                "C_Cpp.intelliSenseEngine": "disabled",
+                "clangd.arguments": [
+                    "--background-index",
+                    "--clang-tidy",
+                    "--completion-style=detailed",
+                    "--header-insertion=iwyu"
+                ],
+                "editor.tabSize": 4,
+                "editor.formatOnSave": true,
+                "files.autoSave": "onFocusChange",
+                "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+                "[cpp]": {
+                    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+                }
+            }
+        }
+    }
+}
