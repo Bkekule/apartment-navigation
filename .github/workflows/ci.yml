@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  pre-commit:
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
+            -o /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] \
+            http://packages.osrfoundation.org/gazebo/ubuntu-stable \
+            $(lsb_release -cs) main" \
+            | sudo tee /etc/apt/sources.list.d/gazebo-stable.list
+          sudo apt update && sudo apt install -y gz-harmonic cmake doxygen cppcheck pre-commit zsh
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install gz-harmonic cmake doxygen cppcheck pre-commit
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files

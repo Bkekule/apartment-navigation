@@ -1,0 +1,62 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 'v6.0.0'
+    hooks:
+      - id: trailing-whitespace
+        exclude: 'docs/doxygen/.*'
+      - id: end-of-file-fixer
+        exclude: 'docs/doxygen/.*'
+      - id: sort-simple-yaml
+      - id: mixed-line-ending
+      - id: check-yaml
+      - id: check-xml
+      - id: check-executables-have-shebangs
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-case-conflict
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/woodruffw/zizmor-pre-commit
+    rev: v1.24.1
+    hooks:
+      - id: zizmor
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v22.1.4
+    hooks:
+      - id: clang-format
+        types_or: [c, c++]
+
+  - repo: local
+    hooks:
+      - id: build-ubsan
+        name: Build (UBSan)
+        language: system
+        entry: ci/build.sh
+        pass_filenames: false
+        always_run: true
+
+      - id: build-asan
+        name: Build (ASan)
+        language: system
+        entry: bash -c 'ENABLE_ASAN=ON ci/build.sh'
+        pass_filenames: false
+        always_run: true
+
+      - id: build-tsan
+        name: Build (TSan)
+        language: system
+        entry: bash -c 'ENABLE_TSAN=ON ci/build.sh'
+        pass_filenames: false
+        always_run: true
+
+      - id: docs
+        name: Docs (Doxygen)
+        language: system
+        entry: ci/docs.sh
+        pass_filenames: false
+        always_run: true

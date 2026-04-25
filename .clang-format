@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+AccessModifierOffset: -2
+ColumnLimit: 120
+IncludeBlocks: Regroup
+SortIncludes: CaseSensitive
+AlignAfterOpenBracket: BlockIndent
+BinPackParameters: false
+BreakInheritanceList: AfterComma

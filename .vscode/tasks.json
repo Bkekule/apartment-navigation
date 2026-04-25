@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "ci/build.sh",
+            "group": { "kind": "build", "isDefault": true },
+            "presentation": { "reveal": "always" },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build (ASan)",
+            "type": "shell",
+            "command": "ENABLE_ASAN=ON ci/build.sh",
+            "group": "build",
+            "presentation": { "reveal": "always" },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build (TSan)",
+            "type": "shell",
+            "command": "ENABLE_TSAN=ON ci/build.sh",
+            "group": "build",
+            "presentation": { "reveal": "always" },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Format Check",
+            "type": "shell",
+            "command": "find script -name '*.cpp' -o -name '*.hpp' | xargs clang-format --dry-run --Werror",
+            "group": "build",
+            "presentation": { "reveal": "always" }
+        },
+        {
+            "label": "Analyse",
+            "type": "shell",
+            "command": "cmake -S . -B build -DENABLE_CLANG_TIDY=ON -DENABLE_CPPCHECK=ON && cmake --build build -- -j$(sysctl -n hw.logicalcpu)",
+            "group": "build",
+            "presentation": { "reveal": "always" },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Docs",
+            "type": "shell",
+            "command": "ci/docs.sh && open docs/doxygen/html/index.html",
+            "group": "build",
+            "presentation": { "reveal": "always" }
+        }
+    ]
+}
