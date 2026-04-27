@@ -21,6 +21,7 @@ if(ENABLE_CPPCHECK)
         "${CPPCHECK_EXE}"
         "--enable=all"
         "--suppress=missingIncludeSystem"
+        "--suppress=unusedFunction:script/logging.hh"
         "--inline-suppr"
         "--error-exitcode=1")
 endif()
@@ -50,11 +51,15 @@ find_package(gz-plugin2 REQUIRED COMPONENTS register)
 
 add_library(hello_world SHARED script/hello_world.cpp)
 
+target_include_directories(hello_world PRIVATE ${CMAKE_SOURCE_DIR}/script)
+
 target_link_libraries(hello_world
     gz-sim8::gz-sim8
     gz-plugin2::register)
 
 add_library(robot_plugin SHARED script/robot/robot_plugin.cpp)
+
+target_include_directories(robot_plugin PRIVATE ${CMAKE_SOURCE_DIR}/script)
 
 target_link_libraries(robot_plugin
     gz-sim8::gz-sim8

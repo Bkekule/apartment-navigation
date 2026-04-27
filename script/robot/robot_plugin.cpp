@@ -1,3 +1,5 @@
+#include "logging.hh"
+
 #include <gz/msgs/twist.pb.h>
 #include <gz/plugin/Register.hh>
 #include <gz/sim/Model.hh>
@@ -57,7 +59,7 @@ class RobotPlugin : public gz::sim::System,
         std::string l_topic = "/model/" + m_model.Name(p_ecm) + "/cmd_vel";
         m_node.Subscribe(l_topic, &RobotPlugin::OnCmdVel, this);
 
-        gzmsg << "[RobotPlugin] Listening on " << l_topic << "\n";
+        m_logger.info() << "Listening on " << l_topic << "\n";
     }
 
     /**
@@ -98,6 +100,7 @@ class RobotPlugin : public gz::sim::System,
   private:
     gz::sim::Model m_model{gz::sim::kNullEntity};
     gz::transport::Node m_node;
+    Logger m_logger{"boris_apartment::RobotPlugin"};
     std::mutex m_cmdMutex;
     double m_linearVel{0.0};  ///< Latest linear velocity command (m/s).
     double m_angularVel{0.0}; ///< Latest angular velocity command (rad/s).
@@ -128,7 +131,7 @@ class RobotPlugin : public gz::sim::System,
         // clang-format on
         auto l_jointEntity = m_model.JointByName(p_ecm, p_jointName);
         if (l_jointEntity == gz::sim::kNullEntity) {
-            gzwarn << "[RobotPlugin] Joint not found: " << p_jointName << "\n";
+            m_logger.warn() << "Joint not found: " << p_jointName << "\n";
             return;
         }
 

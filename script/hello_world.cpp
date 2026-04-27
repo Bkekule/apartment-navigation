@@ -1,3 +1,5 @@
+#include "logging.hh"
+
 #include <chrono>
 #include <gz/plugin/Register.hh>
 #include <gz/sim/System.hh>
@@ -33,14 +35,14 @@ class WorldPluginMyRobot : public gz::sim::System,
         gz::sim::EntityComponentManager &_ecm,
         gz::sim::EventManager &_eventMgr
     ) override {
-        gzmsg << "======= Welcome to Boris Apartment's World! =======\n";
+        m_logger.info() << "======= Welcome to Boris Apartment's World! =======\n";
     }
 
     /**
      * @brief Called every simulation step before physics integration. Called repeadedly, even when simulation is
      * paused.
      *
-     * Logs the current simulation time at most once per simulated second.
+     * Logs the current simulation time at most once per 1000 simulated seconds.
      *
      * @param p_info Simulation step metadata (time, paused flag, …).
      * @param _ecm   Entity-component manager (unused).
@@ -51,15 +53,16 @@ class WorldPluginMyRobot : public gz::sim::System,
         gz::sim::EntityComponentManager &_ecm
     ) override {
         // clang-format on
-        // Log once per second to avoid flooding the console.
+        // Log once per 1000 seconds to avoid flooding the console.
         auto l_simSeconds = std::chrono::duration<double>(p_info.simTime).count();
-        if (static_cast<int>(l_simSeconds) > m_lastLoggedSecond) {
-            m_lastLoggedSecond = static_cast<int>(l_simSeconds);
-            gzmsg << "PreUpdate running at sim time: " << l_simSeconds << "s\n";
+        if (static_cast<int>(l_simSeconds / 1000.0) > m_lastLoggedSecond) {
+            m_lastLoggedSecond = static_cast<int>(l_simSeconds / 1000.0);
+            m_logger.info() << "PreUpdate running at sim time: " << l_simSeconds << "s\n";
         }
     }
 
   private:
+    Logger m_logger{"boris_apartment::WorldPluginMyRobot"};
     int m_lastLoggedSecond{-1}; ///< Last simulation second that was logged, to throttle output.
 };
 } // namespace boris_apartment
