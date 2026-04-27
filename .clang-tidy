@@ -5,7 +5,8 @@ Checks: >
   performance-*,
   -modernize-use-trailing-return-type,
   -readability-braces-around-statements,
-  -readability-magic-numbers
+  -readability-magic-numbers,
+  llvm-include-order
 
 WarningsAsErrors: "*"
 

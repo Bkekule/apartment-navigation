@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.7'>
   <model name='robot'>
-    <link name='link_0'>
+    <link name='deck'>
       <inertial>
         <mass>1</mass>
         <inertia>
@@ -92,7 +92,7 @@
         </surface>
       </collision>
     </link>
-    <link name='link_1'>
+    <link name='wheel_left'>
       <inertial>
         <mass>1</mass>
         <inertia>
@@ -185,7 +185,7 @@
         </surface>
       </collision>
     </link>
-    <link name='link_1_clone'>
+    <link name='wheel_right'>
       <inertial>
         <mass>1</mass>
         <inertia>
@@ -278,12 +278,12 @@
         </surface>
       </collision>
     </link>
-    <joint name='link_0_JOINT_0' type='revolute'>
-      <parent>link_0</parent>
-      <child>link_1</child>
+    <joint name='deck_to_left_wheel' type='revolute'>
+      <parent>deck</parent>
+      <child>wheel_left</child>
       <pose>0 0 0 0 -0 0</pose>
       <axis>
-        <xyz>0 0 1</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>
@@ -310,12 +310,12 @@
         </ode>
       </physics>
     </joint>
-    <joint name='link_0_JOINT_1' type='revolute'>
-      <parent>link_0</parent>
-      <child>link_1_clone</child>
+    <joint name='deck_to_right_wheel' type='revolute'>
+      <parent>deck</parent>
+      <child>wheel_right</child>
       <pose>0 0 0 0 -0 0</pose>
       <axis>
-        <xyz>1 0 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>

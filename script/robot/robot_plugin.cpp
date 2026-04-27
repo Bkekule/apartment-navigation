@@ -9,19 +9,21 @@
 #include <mutex>
 #include <string>
 
+static const char *kLeftWheelJoint = "deck_to_left_wheel";
+static const char *kRightWheelJoint = "deck_to_right_wheel";
+/// Wheel radius in metres.
+static const double kWheelRadius = 0.2;
+/// Half the track width (distance from body center to wheel axle) in metres.
+static const double kHalfTrackWidth = 0.550019;
+
 namespace boris_apartment {
-
-/// Joint that drives the robot forward/backward along the x-axis.
-static constexpr const char *kDriveJoint = "link_0_JOINT_1";
-/// Joint that rotates the robot in-place around the z-axis.
-static constexpr const char *kSteerJoint = "link_0_JOINT_0";
-
 /**
- * @brief Gazebo Sim plugin that drives a two-joint robot via `cmd_vel`.
+ * @brief Gazebo Sim plugin for differential drive robot via `cmd_vel`.
  *
- * Subscribes to `/model/<name>/cmd_vel` (gz.msgs.Twist) and maps:
- * - `linear.x`  → drive joint velocity (m/s)
- * - `angular.z` → steer joint velocity (rad/s)
+ * Subscribes to `/model/<name>/cmd_vel` (gz.msgs.Twist) and uses differential
+ * drive kinematics to map to left and right wheel angular velocities:
+ * - `linear.x`  → forward/backward speed (m/s)
+ * - `angular.z` → rotation speed (rad/s)
  *
  * Register in your SDF with:
  * @code{.xml}
@@ -31,101 +33,110 @@ static constexpr const char *kSteerJoint = "link_0_JOINT_0";
 class RobotPlugin : public gz::sim::System,
                     public gz::sim::ISystemConfigure,
                     public gz::sim::ISystemPreUpdate {
-  private:
-    gz::sim::Model model{gz::sim::kNullEntity};
-    gz::transport::Node node;
-
-    std::mutex cmdMutex;
-    double linearVel{0.0};  ///< Latest linear velocity command (m/s).
-    double angularVel{0.0}; ///< Latest angular velocity command (rad/s).
-
-    /**
-     * @brief Transport callback — stores the latest Twist command.
-     * @param msg Incoming velocity message.
-     */
-    void OnCmdVel(const gz::msgs::Twist &msg) {
-        std::scoped_lock lock(cmdMutex);
-        linearVel = msg.linear().x();
-        angularVel = msg.angular().z();
-    }
-
   public:
     /**
      * @brief Called once when the plugin is loaded.
      *
      * Resolves the model entity and subscribes to its `cmd_vel` topic.
      *
-     * @param _entity  SDF entity that owns this plugin.
-     * @param _sdf     Parsed SDF element (unused).
-     * @param _ecm     Entity-component manager for the simulation world.
+     * @param p_entity   SDF entity that owns this plugin.
+     * @param _sdf       Parsed SDF element (unused).
+     * @param p_ecm      Entity-component manager for the simulation world.
+     * @param _eventMgr  Event manager (unused).
      */
     void Configure(
-        const gz::sim::Entity &_entity,
+        const gz::sim::Entity &p_entity,
         const std::shared_ptr<const sdf::Element> &_sdf,
-        gz::sim::EntityComponentManager &_ecm,
-        gz::sim::EventManager & /*_eventMgr*/
+        gz::sim::EntityComponentManager &p_ecm,
+        gz::sim::EventManager &_eventMgr
     ) override {
-        model = gz::sim::Model(_entity);
+        m_model = gz::sim::Model(p_entity);
 
         // Topic: /model/<robot_name>/cmd_vel
         // Publish a gz.msgs.Twist there to drive the robot.
-        std::string topic = "/model/" + model.Name(_ecm) + "/cmd_vel";
-        node.Subscribe(topic, &RobotPlugin::OnCmdVel, this);
+        std::string l_topic = "/model/" + m_model.Name(p_ecm) + "/cmd_vel";
+        m_node.Subscribe(l_topic, &RobotPlugin::OnCmdVel, this);
 
-        gzmsg << "[RobotPlugin] Listening on " << topic << "\n";
+        gzmsg << "[RobotPlugin] Listening on " << l_topic << "\n";
     }
 
     /**
-     * @brief Called every simulation step before physics integration.
+     * @brief Called every simulation step before physics integration. Called repeadedly, even when simulation is
+     * paused.
      *
-     * Reads the latest velocity command (under mutex) and forwards it to
-     * both joints via `JointVelocityCmd` components.
+     * Reads the latest velocity command (under mutex) and applies differential
+     * drive kinematics to compute left and right wheel velocities, then commands
+     * both wheels via `JointVelocityCmd` components.
      *
-     * @param _info Simulation step metadata (time, paused flag, …).
-     * @param _ecm  Entity-component manager for the simulation world.
+     * @param p_info Simulation step metadata (time, paused flag, …).
+     * @param p_ecm  Entity-component manager for the simulation world.
      */
-    void PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm) override {
-        if (_info.paused)
+    // clang-format off
+    void PreUpdate(
+        const gz::sim::UpdateInfo &p_info,
+        gz::sim::EntityComponentManager &p_ecm
+    ) override {
+        // clang-format on
+        if (p_info.paused)
             return;
 
-        double lin{0.0};
-        double ang{0.0};
+        double l_lin{0.0};
+        double l_ang{0.0};
         {
-            std::scoped_lock lock(cmdMutex);
-            lin = linearVel;
-            ang = angularVel;
+            std::scoped_lock l_lock(m_cmdMutex);
+            l_lin = m_linearVel;
+            l_ang = m_angularVel;
         }
 
-        setJointVelocity(_ecm, kDriveJoint, lin);
-        setJointVelocity(_ecm, kSteerJoint, ang);
+        // Differential drive kinematics: map Twist to wheel angular velocities
+        double l_vLeft = (l_lin - (l_ang * kHalfTrackWidth)) / kWheelRadius;
+        double l_vRight = (l_lin + (l_ang * kHalfTrackWidth)) / kWheelRadius;
+        setJointVelocity(p_ecm, kLeftWheelJoint, l_vLeft);
+        setJointVelocity(p_ecm, kRightWheelJoint, l_vRight);
     }
 
   private:
+    gz::sim::Model m_model{gz::sim::kNullEntity};
+    gz::transport::Node m_node;
+    std::mutex m_cmdMutex;
+    double m_linearVel{0.0};  ///< Latest linear velocity command (m/s).
+    double m_angularVel{0.0}; ///< Latest angular velocity command (rad/s).
+
+    /**
+     * @brief Transport callback — stores the latest Twist command.
+     * @param p_msg Incoming velocity message.
+     */
+    void OnCmdVel(const gz::msgs::Twist &p_msg) {
+        std::scoped_lock l_lock(m_cmdMutex);
+        m_linearVel = p_msg.linear().x();
+        m_angularVel = p_msg.angular().z();
+    }
+
     /**
      * @brief Creates or updates a `JointVelocityCmd` component on a named joint.
      *
-     * @param _ecm      Entity-component manager.
-     * @param jointName Joint name as declared in the model SDF.
-     * @param velocity  Target velocity to apply (units depend on joint axis).
+     * @param p_ecm         Entity-component manager.
+     * @param p_jointName   Joint name as declared in the model SDF.
+     * @param p_velocity    Target velocity to apply (units depend on joint axis).
      */
     // clang-format off
     void setJointVelocity(
-        gz::sim::EntityComponentManager &_ecm,
-        const std::string &jointName,
-        double velocity
+        gz::sim::EntityComponentManager &p_ecm,
+        const std::string &p_jointName,
+        double p_velocity
     ) {
         // clang-format on
-        auto jointEntity = model.JointByName(_ecm, jointName);
-        if (jointEntity == gz::sim::kNullEntity) {
-            gzwarn << "[RobotPlugin] Joint not found: " << jointName << "\n";
+        auto l_jointEntity = m_model.JointByName(p_ecm, p_jointName);
+        if (l_jointEntity == gz::sim::kNullEntity) {
+            gzwarn << "[RobotPlugin] Joint not found: " << p_jointName << "\n";
             return;
         }
 
-        auto *cmd = _ecm.Component<gz::sim::components::JointVelocityCmd>(jointEntity);
-        if (cmd == nullptr) {
-            _ecm.CreateComponent(jointEntity, gz::sim::components::JointVelocityCmd({velocity}));
+        auto *l_cmd = p_ecm.Component<gz::sim::components::JointVelocityCmd>(l_jointEntity);
+        if (l_cmd == nullptr) {
+            p_ecm.CreateComponent(l_jointEntity, gz::sim::components::JointVelocityCmd({p_velocity}));
         } else {
-            cmd->Data()[0] = velocity;
+            l_cmd->Data()[0] = p_velocity;
         }
     }
 };

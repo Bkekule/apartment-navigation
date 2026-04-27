@@ -1,5 +1,5 @@
 var classboris__apartment_1_1_robot_plugin =
 [
-    [ "Configure", "classboris__apartment_1_1_robot_plugin.html#a4fd3f859145c93875dd2156b23389f75", null ],
-    [ "PreUpdate", "classboris__apartment_1_1_robot_plugin.html#a28bea4590b88be5b6884090431d7d2ea", null ]
+    [ "Configure", "classboris__apartment_1_1_robot_plugin.html#ac57807440ad10bbc8efcd0e61411ef19", null ],
+    [ "PreUpdate", "classboris__apartment_1_1_robot_plugin.html#a3f4df404e878e851ac94e4a26a4354a8", null ]
 ];

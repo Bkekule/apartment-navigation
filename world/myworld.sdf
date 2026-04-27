@@ -130,12 +130,12 @@
     </include>
     <include>
       <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/dining chair</uri>
-      <name>DiningChair</name>
+      <name>DiningChair_2</name>
       <pose>1.8059922456741333 2.8039956092834473 0 0 0 -1.5688099455228064</pose>
     </include>
     <include>
       <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/dining chair</uri>
-      <name>DiningChair_0</name>
+      <name>DiningChair_1</name>
       <pose>0.80759608745574951 2.8082864284515381 0 0 0 1.5279399871637525</pose>
     </include>
     <light name='sun' type='directional'>

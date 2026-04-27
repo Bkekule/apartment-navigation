@@ -1,8 +1,8 @@
 #include <chrono>
 #include <gz/plugin/Register.hh>
-#include <gz/sim/Model.hh>
 #include <gz/sim/System.hh>
 #include <gz/sim/Util.hh>
+#include <gz/sim/components.hh>
 #include <gz/sim/components/World.hh>
 #include <sdf/Element.hh>
 
@@ -19,9 +19,6 @@ namespace boris_apartment {
 class WorldPluginMyRobot : public gz::sim::System,
                            public gz::sim::ISystemConfigure,
                            public gz::sim::ISystemPreUpdate {
-  private:
-    int lastLoggedSecond{-1}; ///< Last simulation second that was logged, to throttle output.
-
   public:
     /**
      * @brief Called once by Gazebo when the plugin is loaded.
@@ -36,30 +33,34 @@ class WorldPluginMyRobot : public gz::sim::System,
         gz::sim::EntityComponentManager &_ecm,
         gz::sim::EventManager &_eventMgr
     ) override {
-        gzmsg << "Welcome to Boris Apartment's World!\n";
+        gzmsg << "======= Welcome to Boris Apartment's World! =======\n";
     }
 
     /**
-     * @brief Called every simulation step before physics integration.
+     * @brief Called every simulation step before physics integration. Called repeadedly, even when simulation is
+     * paused.
      *
      * Logs the current simulation time at most once per simulated second.
      *
-     * @param _info Simulation step metadata (time, paused flag, …).
-     * @param _ecm  Entity-component manager (unused).
+     * @param p_info Simulation step metadata (time, paused flag, …).
+     * @param _ecm   Entity-component manager (unused).
      */
     // clang-format off
     void PreUpdate(
-        const gz::sim::UpdateInfo &_info,
+        const gz::sim::UpdateInfo &p_info,
         gz::sim::EntityComponentManager &_ecm
     ) override {
         // clang-format on
         // Log once per second to avoid flooding the console.
-        auto simSeconds = std::chrono::duration<double>(_info.simTime).count();
-        if (static_cast<int>(simSeconds) > lastLoggedSecond) {
-            lastLoggedSecond = static_cast<int>(simSeconds);
-            gzmsg << "PreUpdate running at sim time: " << simSeconds << "s\n";
+        auto l_simSeconds = std::chrono::duration<double>(p_info.simTime).count();
+        if (static_cast<int>(l_simSeconds) > m_lastLoggedSecond) {
+            m_lastLoggedSecond = static_cast<int>(l_simSeconds);
+            gzmsg << "PreUpdate running at sim time: " << l_simSeconds << "s\n";
         }
     }
+
+  private:
+    int m_lastLoggedSecond{-1}; ///< Last simulation second that was logged, to throttle output.
 };
 } // namespace boris_apartment
 
