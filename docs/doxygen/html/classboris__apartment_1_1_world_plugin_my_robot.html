@@ -105,9 +105,7 @@ Inheritance diagram for boris_apartment::WorldPluginMyRobot:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad953d253f766e302c69dfbec19fe348f" id="r_ad953d253f766e302c69dfbec19fe348f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad953d253f766e302c69dfbec19fe348f">Configure</a> (const gz::sim::Entity &amp;_entity, const std::shared_ptr&lt; const sdf::Element &gt; &amp;_sdf, gz::sim::EntityComponentManager &amp;_ecm, gz::sim::EventManager &amp;_eventMgr) override</td></tr>
-<tr class="memdesc:ad953d253f766e302c69dfbec19fe348f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once by Gazebo when the plugin is loaded.  <br /></td></tr>
 <tr class="memitem:a6476fba427103be5b3ca4ca693912a30" id="r_a6476fba427103be5b3ca4ca693912a30"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6476fba427103be5b3ca4ca693912a30">PreUpdate</a> (const gz::sim::UpdateInfo &amp;p_info, gz::sim::EntityComponentManager &amp;_ecm) override</td></tr>
-<tr class="memdesc:a6476fba427103be5b3ca4ca693912a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every simulation step before physics integration. Called repeadedly, even when simulation is paused.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Gazebo Sim world plugin that logs simulation time once per second. </p>
@@ -150,17 +148,6 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called once by Gazebo when the plugin is loaded. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">_entity</td><td>SDF entity that owns this plugin (unused). </td></tr>
-    <tr><td class="paramname">_sdf</td><td>Parsed SDF element (unused). </td></tr>
-    <tr><td class="paramname">_ecm</td><td>Entity-component manager (unused). </td></tr>
-    <tr><td class="paramname">_eventMgr</td><td>Event manager (unused). </td></tr>
-  </table>
-  </dd>
-</dl>
-
 </div>
 </div>
 <a id="a6476fba427103be5b3ca4ca693912a30" name="a6476fba427103be5b3ca4ca693912a30"></a>
@@ -190,20 +177,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called every simulation step before physics integration. Called repeadedly, even when simulation is paused. </p>
-<p>Logs the current simulation time at most once per 1000 simulated seconds.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">p_info</td><td>Simulation step metadata (time, paused flag, …). </td></tr>
-    <tr><td class="paramname">_ecm</td><td>Entity-component manager (unused). </td></tr>
-  </table>
-  </dd>
-</dl>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>script/<a class="el" href="hello__world_8cpp.html">hello_world.cpp</a></li>
+<li>script/hello_world/<a class="el" href="hello__world_8cpp.html">hello_world.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

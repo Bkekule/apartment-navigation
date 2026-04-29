@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['worldpluginmyrobot_0',['WorldPluginMyRobot',['../classboris__apartment_1_1_world_plugin_my_robot.html',1,'boris_apartment']]]
+  ['info_0',['info',['../class_logger.html#af3b385a1085fd3c9f7fa959afbc859fb',1,'Logger']]]
 ];

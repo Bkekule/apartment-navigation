@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+if(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "26.0" CACHE STRING "Minimum macOS deployment target")
+endif()
 
 project(boris_apartment_plugins)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(ENABLE_CLANG_TIDY "Run clang-tidy on every compiled file" OFF)
@@ -21,7 +26,7 @@ if(ENABLE_CPPCHECK)
         "${CPPCHECK_EXE}"
         "--enable=all"
         "--suppress=missingIncludeSystem"
-        "--suppress=unusedFunction:script/logging.hh"
+        "--suppress=unusedFunction"
         "--inline-suppr"
         "--error-exitcode=1")
 endif()
@@ -49,18 +54,8 @@ find_package(gz-cmake3 REQUIRED)
 find_package(gz-sim8 REQUIRED)
 find_package(gz-plugin2 REQUIRED COMPONENTS register)
 
-add_library(hello_world SHARED script/hello_world.cpp)
+add_library(boris_common INTERFACE)
+target_include_directories(boris_common INTERFACE ${CMAKE_SOURCE_DIR}/script/common)
 
-target_include_directories(hello_world PRIVATE ${CMAKE_SOURCE_DIR}/script)
-
-target_link_libraries(hello_world
-    gz-sim8::gz-sim8
-    gz-plugin2::register)
-
-add_library(robot_plugin SHARED script/robot/robot_plugin.cpp)
-
-target_include_directories(robot_plugin PRIVATE ${CMAKE_SOURCE_DIR}/script)
-
-target_link_libraries(robot_plugin
-    gz-sim8::gz-sim8
-    gz-plugin2::register)
+add_subdirectory(script/hello_world)
+add_subdirectory(script/robot)

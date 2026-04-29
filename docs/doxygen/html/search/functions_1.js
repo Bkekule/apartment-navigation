@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['preupdate_0',['PreUpdate',['../classboris__apartment_1_1_world_plugin_my_robot.html#a6476fba427103be5b3ca4ca693912a30',1,'boris_apartment::WorldPluginMyRobot::PreUpdate()'],['../classboris__apartment_1_1_robot_plugin.html#a3f4df404e878e851ac94e4a26a4354a8',1,'boris_apartment::RobotPlugin::PreUpdate()']]]
+  ['debug_0',['debug',['../class_logger.html#a0480df3c8fc2e86b475acc1aa956b03f',1,'Logger']]],
+  ['differentialdrive_1',['differentialDrive',['../namespaceboris__apartment_1_1kinematics.html#afd07252539f4d466f0d837cfe0f6a635',1,'boris_apartment::kinematics']]]
 ];
