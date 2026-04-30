@@ -346,6 +346,6 @@
     <allow_auto_disable>1</allow_auto_disable>
 
     <plugin name='boris_apartment::RobotPlugin'
-            filename='librobot_plugin.dylib'/>
+            filename='robot/librobot_plugin.so'/>
   </model>
 </sdf>

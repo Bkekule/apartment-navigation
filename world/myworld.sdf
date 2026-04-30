@@ -1,6 +1,6 @@
 <sdf version='1.10'>
   <world name='default'>
-    <plugin name='boris_apartment::WorldPluginMyRobot' filename='libhello_world.dylib'/>
+    <plugin name='boris_apartment::WorldPluginMyRobot' filename='hello_world/libhello_world.so'/>
     <plugin name='gz::sim::systems::Physics' filename='gz-sim-physics-system'/>
     <plugin name='gz::sim::systems::UserCommands' filename='gz-sim-user-commands-system'/>
     <plugin name='gz::sim::systems::SceneBroadcaster' filename='gz-sim-scene-broadcaster-system'/>

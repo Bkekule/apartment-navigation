@@ -6,7 +6,6 @@ TSAN=${ENABLE_TSAN:-OFF}
 UBSAN=${ENABLE_UBSAN:-ON}
 
 
-
 rm -rf build && cmake -S . -B build \
     -DENABLE_ASAN="$ASAN" \
     -DENABLE_TSAN="$TSAN" \
